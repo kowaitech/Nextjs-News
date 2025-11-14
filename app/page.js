@@ -1,66 +1,105 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Header from "./components/Header";
+import { notFound } from "next/navigation";
 
-export default function Home() {
+// Metadata for SEO
+export const metadata = {
+  title: "Home |  News",
+  description: "Stay updated with the latest spaceflight and rocket news.",
+};
+
+//  SSG: Fetch at build time using Next.js `fetch` with revalidate option
+
+export const revalidate = 3600; // Rebuild every 1 hour (Static Site Generation + ISR)
+
+export default async function Home() {
+  
+  const res = await fetch("https://api.spaceflightnewsapi.net/v4/articles/?limit=6", {
+    next: { revalidate: 3600 }, // ensure incremental static regeneration
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch news"); // handled by error.js
+  }
+
+  // const data = await res.json();
+  
+  const data = await res.json();
+  if (!data.results || data.results.length === 0) {
+    notFound(); // triggers not-found.js
+  }
+
+  const articles = data.results ?? [];
+
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div>
+      <Header />
+
+      {/* Hero Section */}
+      <section className="bg-light text-center py-5 border-bottom">
+        <div className="container">
+          <h1 className="display-5 fw-bold text-primary mb-3">
+             News Portal
+          </h1>
+          <p className="lead text-secondary mb-4">
+            Get the latest news and updates from the world of rockets, launches, and space missions.
           </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+          <a href="/students" className="btn btn-primary btn-lg">
+            Explore Live News
           </a>
         </div>
-      </main>
+      </section>
+
+      {/* Latest Articles Section */}
+      <section className="container py-5">
+        <h2 className="fw-bold text-center text-primary mb-4">
+          🛰️ Latest Spaceflight Articles
+        </h2>
+
+        <div className="row g-4">
+          {articles.map((art) => (
+            <div className="col-md-4" key={art.id}>
+              <div className="card h-100 shadow-sm border-0">
+                {art.image_url && (
+                  <img
+                    src={art.image_url}
+                    alt={art.title}
+                    className="card-img-top"
+                    style={{ height: "220px", objectFit: "cover" }}
+                  />
+                )}
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title fw-semibold">{art.title}</h5>
+                  <p className="card-text text-muted flex-grow-1">
+                    {art.summary?.slice(0, 100)}…
+                  </p>
+                  <a
+                    href={art.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-primary btn-sm mt-auto"
+                  >
+                    Read Full Article
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-5">
+          <a href="/students/client" className="btn btn-success btn-lg">
+            🔍 View More News (CSR Example)
+          </a>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-dark text-light text-center py-3 mt-5">
+        <p className="mb-0 small">
+          © {new Date().getFullYear()} Spaceflight News | Built with Next.js SSG 🚀
+        </p>
+      </footer>
     </div>
   );
 }
