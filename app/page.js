@@ -14,11 +14,11 @@ export const revalidate = 3600; // Rebuild every 1 hour (Static Site Generation 
 export default async function Home() {
   
   const res = await fetch("https://api.spaceflightnewsapi.net/v4/articles/?limit=6", {
-    next: { revalidate: 3600 }, // ensure incremental static regeneration
+    next: { revalidate: 3600 }, // ensure incremental static rxegeneration
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch news"); // handled by error.js
+    throw new Error("Failed to Load news"); 
   }
 
   // const data = await res.json();

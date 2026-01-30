@@ -8,7 +8,7 @@ export default function Error({ error, reset }) {
       <p className="text-muted">{error.message || "Unable to load news."}</p>
       <button className="btn btn-outline-primary mt-3" onClick={() => reset()}>
         Try Again
-      </button>
+      </button>3e
     </div>
   );
 }

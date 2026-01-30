@@ -1,5 +1,5 @@
 // app/dashboard/layout.js
-export default function DashboardLayout({ children, messages, profile, test }) {
+export default function DashboardLayout({ children, messages, profile }) {
   return (
     <div style={{ padding: 24 }}>
       <h1>Dashboard (Parallel Routes)</h1>
@@ -10,14 +10,10 @@ export default function DashboardLayout({ children, messages, profile, test }) {
           {messages}
         </aside>
 
-        <main style={{ flex: 1, border: "1px solid #ddd", padding: 16 }}>
-          <h3>Profile</h3>
-          {test}
-        </main>
 
         <div style={{ flex: 1, border: "1px solid #ddd", padding: 16 }}>
           <h3>Profile</h3>
-          {messages}
+          {profile}
         </div>
       </div>
       
